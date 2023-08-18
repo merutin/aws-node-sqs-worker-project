@@ -4,7 +4,33 @@ frameworkVersion: '3'
 provider:
   name: aws
   runtime: nodejs18.x
+  region: ap-northeast-1
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action: ['sqs:*']
+          Resource: 'arn:aws:sqs:ap-northeast-1:*:*'
 
 functions:
-  function1:
-    handler: index.handler
+  producer:
+    handler: index.producer
+    events:
+      - httpApi:
+          method: post
+          path: /produce
+    environment:
+      QUEUE_URL: !Ref sampleQueue
+  consumer:
+    handler: index.consumer
+    events:
+      - sqs:
+          arn: !GetAtt [sampleQueue, Arn]
+
+resources:
+  Resources:
+    sampleQueue:
+      Type: 'AWS::SQS::Queue'
+      Properties:
+        QueueName: 'sampleQuene'
+        VisibilityTimeout: 1
