@@ -33,4 +33,4 @@ resources:
       Type: 'AWS::SQS::Queue'
       Properties:
         QueueName: 'sampleQuene'
-        VisibilityTimeout: 1
+        VisibilityTimeout: 30
